@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Library</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Каталог книг</h1>
+
+        <!-- Форма добавления/редактирования -->
+        <div class="form-container">
+            <h2 id="form-title">Добавить книгу</h2>
+            <form id="book-form">
+                <!--  Название -->
+                <input type="hidden" id="book-id">
+                <div class="form-group">
+                    <label for="title">Название</label>
+                    <input type="text" id="title" required maxlength="100">
+                </div>
+                <!-- Автор -->
+                <div class="form-group">
+                    <label for="author">Автор</label>
+                    <input type="text" id="author" required maxlength="100">
+                </div>
+                <!-- Жанр -->
+                <div class="form-group">
+                    <label for="genre">Жанр</label>
+                    <input type="text" id="genre" required maxlength="50">
+                </div>
+                <!-- Цена -->
+                <div class="form-group">
+                    <label for="price">Цена</label>
+                    <input type="number" min="0" id="price" required>
+                </div>
+                <!-- Год -->
+                <div class="form-group">
+                    <label for="year">Год</label>
+                    <input type="number" min="0" max="2030" id="year" required>
+                </div>
+                <!-- Кнопка "Добавить "-->
+                <div class="form-button">
+                    <button type="submit" id="submit-btn">Добавить</button>
+                    <button type="button" id="cancel-btn" style="display: none;">Отмена</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Таблица книг -->
+        <table id="books-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Автор</th>
+                    <th>Жанр</th>
+                    <th>Цена</th>
+                    <th>Год</th>
+                </tr>
+            </thead>
+            <tbody id="books-tbody">
+                <!-- Данные будут заполнены через JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

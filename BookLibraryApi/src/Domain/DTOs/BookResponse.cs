@@ -1,8 +1,11 @@
-﻿namespace BookLibraryApi.Models;
+﻿namespace BookLibraryApi.src.Domain.DTOs;
 
-public class Book
+/// <summary>
+/// Модель для возвращения пользователю Book
+/// </summary>
+public class BookResponse
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Author { get; set; } = string.Empty;
     public string Genre { get; set; } = string.Empty;

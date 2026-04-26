@@ -1,31 +1,36 @@
-﻿using BookLibraryApi.DTOs;
-using BookLibraryApi.Services;
+﻿using AutoMapper;
+using BookLibraryApi.src.Application.Abstractions;
+using BookLibraryApi.src.Domain.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BookLibraryApi.Controllers;
+namespace BookLibraryApi.src.Web.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 // http://localhost/api/books
 public class BooksController : ControllerBase
 {
-    private readonly BooksService _service;
+    private readonly IBooksService _service;
+    private readonly IMapper _mapper;
 
-    public BooksController(BooksService service)
+    public BooksController(IBooksService service, IMapper mapper)
     {
         _service = service;
+        _mapper = mapper;
     }
 
     [HttpGet]
     public async Task<ActionResult<List<BookResponse>>> GetAll(CancellationToken ct)
     {
-        return await _service.GetAll(ct);
+        var books = await _service.GetAll(ct);
+        return Ok(_mapper.Map<List<BookResponse>>(books));
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<BookResponse?>> GetById(Guid id, CancellationToken ct)
     {
-        return await _service.GetById(id, ct);
+        var book = await _service.GetById(id, ct);
+        return Ok(_mapper.Map<BookResponse>(book));
     }
 
     [HttpPost]
@@ -41,7 +46,7 @@ public class BooksController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<BookResponse?>> Update(Guid id, [FromBody] CreateBookRequest request, CancellationToken ct)
+    public async Task<ActionResult<BookResponse?>> Update(Guid id, [FromBody] UpdateBookRequest request, CancellationToken ct)
     {
         if (!ModelState.IsValid)
         {
