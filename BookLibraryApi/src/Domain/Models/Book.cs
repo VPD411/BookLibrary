@@ -1,23 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace BookLibraryApi.src.Domain.Models;
 
-namespace BookLibraryApi.DTOs;
-
-public class CreateBookRequest
+public class Book
 {
-    [Required]
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string Title { get; set; } = string.Empty;
-
-    [Required]
     public string Author { get; set; } = string.Empty;
-
-    [Required]
     public string Genre { get; set; } = string.Empty;
-
-    [Range(0, 100000)]
-    [Required]
     public decimal Price { get; set; }
-
-    [Required]
     public int Year { get; set; }
 }
-
