@@ -44,38 +44,55 @@ async function loadBooks() {
 // Отрисовка книг в таблице
 function renderBooksTable(books) {
     tbody.innerHTML = '';
+
     books.forEach(book => {
         const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${book.id}</td>
-            <td>${book.author}</td>
-            <td>${book.genre}</td>
-            <td>${book.price}</td>
-            <td>${book.year}</td>
-            <td>
-                <button class="action-btn edit-btn" data-id="${book.id}">Редактировать</button>
-                <button class="action-btn delete-btn" data-id="${book.id}">Удалить</button>
-            </td>
-        `;
+
+        const idCell = document.createElement('td');
+        idCell.textContent = book.id;
+
+        const titleCell = document.createElement('td');
+        titleCell.textContent = book.title;
+
+        const authorCell = document.createElement('td');
+        authorCell.textContent = book.author;
+
+        const genreCell = document.createElement('td');
+        genreCell.textContent = book.genre;
+
+        const priceCell = document.createElement('td');
+        priceCell.textContent = book.price;
+
+        const yearCell = document.createElement('td');
+        yearCell.textContent = book.year;
+
+        const actionsCell = document.createElement('td');
+
+        const editBtn = document.createElement('button');
+        editBtn.className = 'action-btn edit-btn';
+        editBtn.textContent = 'Редактировать';
+        editBtn.addEventListener('click', () => editBook(book.id));
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'action-btn delete-btn';  
+        deleteBtn.textContent = 'Удалить';             
+        deleteBtn.addEventListener('click', () => deleteBook(book.id)); 
+
+        actionsCell.appendChild(editBtn);
+        actionsCell.appendChild(deleteBtn);
+
+        row.appendChild(idCell);
+        row.appendChild(titleCell);
+        row.appendChild(authorCell);
+        row.appendChild(genreCell);
+        row.appendChild(priceCell);
+        row.appendChild(yearCell);
+        row.appendChild(actionsCell);
+
         tbody.appendChild(row);
-
-        // Навешиваем обработичики на кнопки удаления и редактирования
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', () => deleteBook(btn.dataset.id));
-        });
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', () => editBook(btn.dataset.id));
-        });
-    });
-
+    })
 }
 
-// Простая защита от XSS (Cross-Site Scripting)
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
 
 // Удаление книги
 async function deleteBook(id) {
@@ -109,7 +126,7 @@ async function editBook(id) {
         // Меняем форму для редактирования
         isEditing = true;
         formTitle.textContent = 'Редактировать книгу';
-        submitBtn.textContent = "Сохранить";
+        submitBtn.textContent = 'Сохранить';
         cancelBtn.style.display = 'inline-block';
     } catch (error) {
         console.error('Ошибка:', error);
@@ -136,7 +153,7 @@ async function handleFormSubmit(event) {
         title: titleInput.value.trim(),
         author: authorInput.value.trim(),
         genre: genreInput.value.trim(),
-        price: parseFloat(yearInput.value),
+        price: parseFloat(priceInput.value),
         year: parseInt(yearInput.value),
     };
 
