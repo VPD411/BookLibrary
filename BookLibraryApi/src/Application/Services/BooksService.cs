@@ -9,20 +9,24 @@ namespace BookLibraryApi.src.Application.Services;
 public class BooksService : IBooksService
 {
     private readonly AppDbContext _db;
+    private readonly ILogger<BooksService> _logger;
 
-    public BooksService(AppDbContext db)
+    public BooksService(AppDbContext db, ILogger<BooksService> logger)
     {
         _db = db;
+        _logger = logger;
     }
 
     public async Task<List<Book>> GetAll(CancellationToken ct)
     {
+        _logger.LogInformation("All books getting.");
         return await _db.Books.ToListAsync(ct);
     }
 
 
     public async Task<Book?> GetById(Guid id, CancellationToken ct)
     {
+        _logger.LogInformation("Searching book with ID {bookId}", id);
         var book = await _db.Books.FindAsync([id], ct);
 
         if (book is null)
@@ -35,6 +39,7 @@ public class BooksService : IBooksService
 
     public async Task<Book> Create(CreateBookRequest request, CancellationToken ct)
     {
+        _logger.LogInformation("Creating book");
         var book = new Book
         {
             Title = request.Title,
@@ -52,6 +57,7 @@ public class BooksService : IBooksService
 
     public async Task Delete(Guid id, CancellationToken ct)
     {
+        _logger.LogInformation("Deleting book with ID {id}", id);
         var book = await _db.Books.FindAsync([id], ct);
 
         if (book is null)
@@ -65,6 +71,7 @@ public class BooksService : IBooksService
 
     public async Task<Book?> Update(Guid id, UpdateBookRequest request, CancellationToken ct)
     {
+        _logger.LogInformation("Updating book with ID {id}", id);
         var oldBook = await _db.Books.FindAsync([id], ct);
 
         if (oldBook is null)

@@ -2,11 +2,16 @@ using BookLibraryApi.src.Application.Abstractions;
 using BookLibraryApi.src.Application.Mapping;
 using BookLibraryApi.src.Application.Services;
 using BookLibraryApi.src.Infrastructures.DataAccess.Data;
+using BookLibraryApi.src.Web.Filters;
+using BookLibraryApi.src.Web.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<HttpResponseExceptionFilter>();
+});
 
 builder.Services.AddSwaggerGen();
 
@@ -21,12 +26,15 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddAutoMapper(typeof(MappingProfile));
-
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<MappingProfile>();
+});
 builder.Services.AddScoped<IBooksService, BooksService>();
+builder.Services.AddScoped<HttpResponseExceptionFilter>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=books.db"));
+    options.UseSqlite("Data Source=books.db")); 
 
 var app = builder.Build();
 
@@ -36,6 +44,13 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
+
+app.UseMiddleware<RequestLoggingMiddleware>();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/error");
+}
 
 // Включаем обслуживание статических файлов из wwwroot
 app.UseDefaultFiles(); // автоматически ищет index.html
