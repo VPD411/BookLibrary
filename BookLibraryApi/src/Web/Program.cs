@@ -1,10 +1,13 @@
-using BookLibraryApi.src.Application.Abstractions;
+using BookLibraryApi.src.Application.Abstractions.Services;
 using BookLibraryApi.src.Application.Mapping;
 using BookLibraryApi.src.Application.Services;
 using BookLibraryApi.src.Infrastructures.DataAccess.Data;
 using BookLibraryApi.src.Web.Filters;
 using BookLibraryApi.src.Web.Middleware;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,13 +33,41 @@ builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<MappingProfile>();
 });
+
 builder.Services.AddScoped<IBooksService, BooksService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 builder.Services.AddScoped<HttpResponseExceptionFilter>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=books.db")); 
+    options.UseSqlite("Data Source=books.db"));
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+            RoleClaimType = System.Security.Claims.ClaimTypes.Role
+        };
+    });
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
+    .AddPolicy("UserOnly", policy => policy.RequireRole("User"));
 
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseSwagger();
 app.UseSwaggerUI();

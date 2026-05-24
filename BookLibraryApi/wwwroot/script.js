@@ -19,8 +19,30 @@ const tbody = document.getElementById('books-tbody');
 let isEditing = false; // edit - true (put), create - false (post)
 let editingBookId = null; // ID редактируепмой книги
 
-// При загрузке страницы получаем список книг
-document.addEventListener('DOMContentLoaded', loadBooks);
+
+// При загрузке страницы проверяем авторизацию и отображаем панель
+document.addEventListener('DOMContentLoaded', () => {
+    const username = localStorage.getItem('username');
+    const greet = document.getElementById('user-greeting');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    if (username) {
+        greet.textContent = `${username}`;
+        logoutBtn.style.display = 'inline-block';
+    } else {
+        greet.textContent = 'Гость';
+        logoutBtn.style.display = 'none';
+    }
+
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('role');
+        window.location.href='/login.html';
+    });
+
+    loadBooks();
+});
 
 // Обработчик отправки формы
 bookForm.addEventListener('submit', handleFormSubmit);
@@ -39,6 +61,18 @@ async function loadBooks() {
         console.error('Ошибка: ', error);
         alert('Не удалось загрузить список книг');
     }
+}
+
+// Ф-ция получения заголовков с токенами
+function getAuthHeaders() {
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    const token = localStorage.getItem('token');
+    if (token) {
+        headers['Authorization'] = 'Bearer ' + token;
+    }
+    return headers;
 }
 
 // Отрисовка книг в таблице
@@ -163,9 +197,7 @@ async function handleFormSubmit(event) {
     try {
         const response = await fetch(url, {
             method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify(book)
         });
 

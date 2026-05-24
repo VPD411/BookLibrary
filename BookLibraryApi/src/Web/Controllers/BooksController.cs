@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using BookLibraryApi.src.Application.Abstractions;
+using BookLibraryApi.src.Application.Abstractions.Services;
 using BookLibraryApi.src.Domain.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookLibraryApi.src.Web.Controllers;
@@ -33,6 +34,7 @@ public class BooksController : ControllerBase
         return Ok(_mapper.Map<BookResponse>(book));
     }
 
+    // [Authorize]
     [HttpPost]
     public async Task<ActionResult<BookResponse?>> Create([FromBody] CreateBookRequest request, CancellationToken ct)
     {
@@ -45,6 +47,7 @@ public class BooksController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
+    // [Authorize]
     [HttpPut("{id}")]
     public async Task<ActionResult<BookResponse?>> Update(Guid id, [FromBody] UpdateBookRequest request, CancellationToken ct)
     {
@@ -64,6 +67,7 @@ public class BooksController : ControllerBase
 
     }
 
+    // [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
     {
