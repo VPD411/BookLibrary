@@ -1,40 +1,31 @@
 ﻿using BookLibraryApi.src.Domain.Models;
-using BookLibraryApi.src.Application.Abstractions;
 using BookLibraryApi.src.Domain.DTOs;
-using BookLibraryApi.src.Infrastructures.DataAccess.Data;
-using Microsoft.EntityFrameworkCore;
+using BookLibraryApi.src.Application.Abstractions.Services;
+using BookLibraryApi.src.Application.Abstractions.DataAccess.Repositories;
 
 namespace BookLibraryApi.src.Application.Services;
 
 public class BooksService : IBooksService
 {
-    private readonly AppDbContext _db;
+    private readonly IBooksRepository _repository;
     private readonly ILogger<BooksService> _logger;
 
-    public BooksService(AppDbContext db, ILogger<BooksService> logger)
+    public BooksService(IBooksRepository repository, ILogger<BooksService> logger)
     {
-        _db = db;
+        _repository = repository;
         _logger = logger;
     }
 
-    public async Task<List<Book>> GetAll(CancellationToken ct)
+    public async Task<IEnumerable<Book>> GetAll(CancellationToken ct)
     {
         _logger.LogInformation("All books getting.");
-        return await _db.Books.ToListAsync(ct);
+        return await _repository.GetAllAsync(ct);
     }
-
 
     public async Task<Book?> GetById(Guid id, CancellationToken ct)
     {
         _logger.LogInformation("Searching book with ID {bookId}", id);
-        var book = await _db.Books.FindAsync([id], ct);
-
-        if (book is null)
-        {
-            return null;
-        }
-
-        return book;
+        return await _repository.GetByIdAsync(id, ct);
     }
 
     public async Task<Book> Create(CreateBookRequest request, CancellationToken ct)
@@ -49,30 +40,27 @@ public class BooksService : IBooksService
             Year = request.Year
         };
 
-        _db.Books.Add(book);
-        await _db.SaveChangesAsync(ct);
-
-        return book;
+        var result = await _repository.CreateAsync(book, ct);
+        return result;
     }
 
     public async Task Delete(Guid id, CancellationToken ct)
     {
         _logger.LogInformation("Deleting book with ID {id}", id);
-        var book = await _db.Books.FindAsync([id], ct);
+        var book = await _repository.GetByIdAsync(id, ct);
 
         if (book is null)
         {
             return;
         }
 
-        _db.Books.Remove(book);
-        await _db.SaveChangesAsync(ct);
+        _repository.Delete(book);
     }
 
     public async Task<Book?> Update(Guid id, UpdateBookRequest request, CancellationToken ct)
     {
         _logger.LogInformation("Updating book with ID {id}", id);
-        var oldBook = await _db.Books.FindAsync([id], ct);
+        var oldBook = await _repository.GetByIdAsync(id, ct);
 
         if (oldBook is null)
         {
@@ -85,7 +73,7 @@ public class BooksService : IBooksService
         oldBook.Price = request.Price;
         oldBook.Year = request.Year;
 
-        await _db.SaveChangesAsync(ct);
-        return oldBook;
+        var newBook = _repository.Update(oldBook);
+        return newBook;
     }
 }
