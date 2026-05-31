@@ -22,5 +22,9 @@ internal class UserEntityConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Roles)
             .HasMaxLength(20)
             .IsRequired();
+
+        builder.HasMany(u => u.Reviews)
+            .WithOne(r => r.User)
+            .HasForeignKey(u => u.UserId);
     }
 }

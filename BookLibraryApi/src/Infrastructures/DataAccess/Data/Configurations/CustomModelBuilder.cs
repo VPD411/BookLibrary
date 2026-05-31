@@ -8,6 +8,7 @@ internal static class CustomModelBuilder
     {
         builder
             .ApplyConfiguration(new UserEntityConfiguration())
-            .ApplyConfiguration(new BookEntityConfiguration());
+            .ApplyConfiguration(new BookEntityConfiguration())
+            .ApplyConfiguration(new ReviewEntityConfiguration());
     }
 }

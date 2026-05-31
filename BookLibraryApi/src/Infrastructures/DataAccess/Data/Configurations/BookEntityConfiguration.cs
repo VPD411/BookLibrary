@@ -28,5 +28,9 @@ public class BookEntityConfiguration : IEntityTypeConfiguration<Book>
 
         builder.Property(b => b.Year)
             .IsRequired();
+
+        builder.HasMany(b => b.Reviews)
+            .WithOne(r => r.Book)
+            .HasForeignKey(r => r.BookId);
     }
 }
