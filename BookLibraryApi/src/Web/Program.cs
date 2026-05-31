@@ -19,6 +19,12 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<HttpResponseExceptionFilter>();
 });
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
 builder.Services.AddSwaggerGen();
 
 // Настройка CORS (Тестовый пример, в реальных случаях так делать нельзя!)
@@ -40,9 +46,11 @@ builder.Services.AddAutoMapper(cfg =>
 builder.Services.AddScoped<IBooksService, BooksService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IReviewsService, ReviewsService>();
 
 builder.Services.AddScoped<IBooksRepository, BooksRepository>();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<IReviewsRepository, ReviewsRepository>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

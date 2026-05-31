@@ -1,10 +1,11 @@
-﻿using BookLibraryApi.src.Domain.Models;
+﻿using BookLibraryApi.src.Application.Abstractions.DataAccess.Repositories;
+using BookLibraryApi.src.Domain.Models;
 using BookLibraryApi.src.Infrastructures.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookLibraryApi.src.Infrastructures.DataAccess.Repositories;
 
-public class ReviewsRepository
+public class ReviewsRepository : IReviewsRepository
 {
     private readonly AppDbContext _context;
     private readonly DbSet<Review> _db;
