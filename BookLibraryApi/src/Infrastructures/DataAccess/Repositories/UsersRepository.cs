@@ -1,5 +1,6 @@
 ﻿using BookLibraryApi.src.Application.Abstractions.DataAccess.Repositories;
 using BookLibraryApi.src.Domain.Models;
+using BookLibraryApi.src.Infrastructures.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -7,11 +8,13 @@ namespace BookLibraryApi.src.Infrastructures.DataAccess.Repositories;
 
 public class UsersRepository : IUsersRepository
 {
+    private readonly AppDbContext _context;
     private readonly DbSet<User> _db;
 
-    public UsersRepository(DbSet<User> db)
+    public UsersRepository(AppDbContext context)
     {
-        _db = db;
+        _context = context;
+        _db = context.Set<User>();
     }
 
     public async Task<IEnumerable<User>> GetAllAsync(CancellationToken ct)

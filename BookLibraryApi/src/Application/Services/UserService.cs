@@ -1,5 +1,4 @@
 ﻿using BookLibraryApi.src.Domain.Models;
-using BookLibraryApi.src.Domain.Enums;
 using BookLibraryApi.src.Application.Abstractions.Services;
 using BookLibraryApi.src.Application.Abstractions.DataAccess.Repositories;
 
@@ -18,5 +17,23 @@ public class UserService : IUserService
     {
         var result = await _repository.GetWithPredicateAsync(u => u.Username == username && u.PasswordHash == password, ct);
         return result;
+    }
+
+    public async Task<User> Register(string username, string password, CancellationToken ct)
+    {
+        var user = new User
+        {
+            Username = username,
+            PasswordHash = password
+        };
+
+        var result = await _repository.CreateAsync(user, ct);
+        return result;
+    }
+
+    public async Task<User?> GetAsync(Guid id, CancellationToken ct)
+    {
+        var user = await _repository.GetByIdAsync(id, ct);
+        return user;
     }
 }

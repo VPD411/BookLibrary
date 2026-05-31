@@ -1,16 +1,19 @@
 ﻿using BookLibraryApi.src.Application.Abstractions.DataAccess.Repositories;
 using BookLibraryApi.src.Domain.Models;
+using BookLibraryApi.src.Infrastructures.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookLibraryApi.src.Infrastructures.DataAccess.Repositories;
 
 public class BooksRepository : IBooksRepository
 {
+    private readonly AppDbContext _context;
     private readonly DbSet<Book> _db;
 
-    public BooksRepository(DbSet<Book> db)
+    public BooksRepository(AppDbContext context)
     {
-        _db = db;
+        _context = context;
+        _db = context.Set<Book>();
     }
 
     public async Task<IEnumerable<Book>> GetAllAsync(CancellationToken ct)
