@@ -2,18 +2,21 @@
 using BookLibraryApi.src.Domain.DTOs;
 using BookLibraryApi.src.Application.Abstractions.Services;
 using BookLibraryApi.src.Application.Abstractions.DataAccess.Repositories;
+using BookLibraryApi.src.Application.Abstractions.DataAccess;
 
 namespace BookLibraryApi.src.Application.Services;
 
 public class BooksService : IBooksService
 {
     private readonly IBooksRepository _repository;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<BooksService> _logger;
 
-    public BooksService(IBooksRepository repository, ILogger<BooksService> logger)
+    public BooksService(IBooksRepository repository, ILogger<BooksService> logger, IUnitOfWork unitOfWork)
     {
         _repository = repository;
         _logger = logger;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<IEnumerable<Book>> GetAll(CancellationToken ct)
@@ -41,6 +44,7 @@ public class BooksService : IBooksService
         };
 
         var result = await _repository.CreateAsync(book, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return result;
     }
 
@@ -54,7 +58,9 @@ public class BooksService : IBooksService
             return;
         }
 
+       
         _repository.Delete(book);
+        await _unitOfWork.SaveChangesAsync(ct);
     }
 
     public async Task<Book?> Update(Guid id, UpdateBookRequest request, CancellationToken ct)
@@ -74,6 +80,7 @@ public class BooksService : IBooksService
         oldBook.Year = request.Year;
 
         var newBook = _repository.Update(oldBook);
+        await _unitOfWork.SaveChangesAsync(ct);
         return newBook;
     }
 }

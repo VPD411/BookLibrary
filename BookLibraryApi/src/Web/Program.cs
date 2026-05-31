@@ -1,3 +1,4 @@
+using BookLibraryApi.src.Application.Abstractions.DataAccess;
 using BookLibraryApi.src.Application.Abstractions.DataAccess.Repositories;
 using BookLibraryApi.src.Application.Abstractions.Services;
 using BookLibraryApi.src.Application.Mapping;
@@ -42,6 +43,8 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<IBooksRepository, BooksRepository>();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 builder.Services.AddScoped<HttpResponseExceptionFilter>();

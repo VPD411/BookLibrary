@@ -1,16 +1,19 @@
 ﻿using BookLibraryApi.src.Domain.Models;
 using BookLibraryApi.src.Application.Abstractions.Services;
 using BookLibraryApi.src.Application.Abstractions.DataAccess.Repositories;
+using BookLibraryApi.src.Application.Abstractions.DataAccess;
 
 namespace BookLibraryApi.src.Application.Services;
 
 public class UserService : IUserService
 {
     private readonly IUsersRepository _repository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public UserService(IUsersRepository repository)
+    public UserService(IUsersRepository repository, IUnitOfWork unitOfWork)
     {
         _repository = repository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<User?> Authenticate(string username, string password, CancellationToken ct)
@@ -28,6 +31,7 @@ public class UserService : IUserService
         };
 
         var result = await _repository.CreateAsync(user, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return result;
     }
 

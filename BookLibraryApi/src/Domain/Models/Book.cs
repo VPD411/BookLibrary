@@ -8,4 +8,6 @@ public class Book
     public string Genre { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public int Year { get; set; }
+
+    public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }
