@@ -1,7 +1,9 @@
+using BookLibraryApi.src.Application.Abstractions.DataAccess.Repositories;
 using BookLibraryApi.src.Application.Abstractions.Services;
 using BookLibraryApi.src.Application.Mapping;
 using BookLibraryApi.src.Application.Services;
 using BookLibraryApi.src.Infrastructures.DataAccess.Data;
+using BookLibraryApi.src.Infrastructures.DataAccess.Repositories;
 using BookLibraryApi.src.Web.Filters;
 using BookLibraryApi.src.Web.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -37,6 +39,10 @@ builder.Services.AddAutoMapper(cfg =>
 builder.Services.AddScoped<IBooksService, BooksService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+
+builder.Services.AddScoped<IBooksRepository, BooksRepository>();
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+
 
 builder.Services.AddScoped<HttpResponseExceptionFilter>();
 

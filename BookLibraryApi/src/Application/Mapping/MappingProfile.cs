@@ -11,5 +11,7 @@ public class MappingProfile : Profile
         CreateMap<Book, BookResponse>();
         CreateMap<CreateBookRequest, Book>();
         CreateMap<UpdateBookRequest, Book>();
+
+        CreateMap<User, UserResponse>();
     }
 }
